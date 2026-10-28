@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"math"
 	"net/http"
 )
 
@@ -10,7 +11,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /hello", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/plain")
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("hello from the ticketing engine\n"))
 	})
@@ -21,6 +22,10 @@ func main() {
 		}
 
 		writeJSON(w, http.StatusOK, data)
+	})
+
+	mux.HandleFunc("GET /broken", func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(w, http.StatusOK, map[string]any{"bad": math.NaN()})
 	})
 
 	log.Println("listening on :8080")
