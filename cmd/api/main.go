@@ -20,22 +20,25 @@ func main() {
 			"status": "ok",
 		}
 
-		writeJSON(w, data)
+		writeJSON(w, http.StatusOK, data)
 	})
 
 	log.Println("listening on :8080")
 	log.Fatal(http.ListenAndServe(":8080", mux))
 }
 
-func writeJSON(w http.ResponseWriter, v any) {
+func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
+
 	payload, err := json.Marshal(v)
 	if err != nil {
 		log.Println("error marshalling response:", err)
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte(`{"error":"internal server error"}`))
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write(payload)
+	w.WriteHeader(status)
+	_, _ = w.Write(payload)
 }
