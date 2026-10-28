@@ -3,29 +3,26 @@ package main
 import (
 	"encoding/json"
 	"log"
-	"math"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func main() {
-	mux := http.NewServeMux()
+	mux := chi.NewRouter()
 
-	mux.HandleFunc("GET /hello", func(w http.ResponseWriter, r *http.Request) {
+	mux.Get("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("hello from the ticketing engine\n"))
 	})
 
-	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
+	mux.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		data := map[string]string{
 			"status": "ok",
 		}
 
 		writeJSON(w, http.StatusOK, data)
-	})
-
-	mux.HandleFunc("GET /broken", func(w http.ResponseWriter, r *http.Request) {
-		writeJSON(w, http.StatusOK, map[string]any{"bad": math.NaN()})
 	})
 
 	log.Println("listening on :8080")
